@@ -3,9 +3,9 @@
 var Comment = React.createClass({
 
   rawMarkup: function() {
-    var rawMarkup = marked(this.props.children.toString(), {sanitize:true});
-    return {__html: rawMarkup};
-  }
+    var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+    return { __html: rawMarkup };
+  },
 
   render: function() {
     return (
@@ -21,13 +21,26 @@ var Comment = React.createClass({
 });
 
 var CommentList = React.createClass({
+
+  componentDidMount(){
+    console.log(this.props.data);
+  },
+
   render: function() {
+
+    var commentNodes = this.props.data.map(
+      comment =>
+      <Comment author={comment.author} key={comment.id}>
+        {comment.text}
+      </Comment>
+    );
+
     return (
       <div className="commentList">
-        <Comment author="shiyuwudi"> enjoy a unique three-day holiday!</Comment>
-        <Comment author="floor one's mother">enjoy *your~* sister!</Comment>
+        {commentNodes}
       </div>
     );
+
   }
 });
 
@@ -35,25 +48,36 @@ var CommentForm = React.createClass({
   render: function() {
     return (
       <div className="commentForm">
-        Hello, world! I am a CommentForm.
+        大家好，将来我就是评论提交框！请多关照！！
       </div>
     );
   }
 });
 
 var CommentBox = React.createClass({
+
+  //componentDidMount(){this.state={a: b}} (reactive native) 等价？
+  getInitialState: function() {
+    return {data : []};
+  },
+
   render: function() {
     return (
       <div className="CommentBox">
-        <h1>Comments Below:</h1>
-        <CommentList />
+        <h1>评论板块</h1>
+        <CommentList data={this.state.data}/>
         <CommentForm />
       </div>
     );
   }
 });
 
+var data = [
+  {id:'1', author:'shiyu', text:'i love u wanning~'},
+  {id:'2', author:'jinwanning', text:'me *too*~, darling'}
+];
+
 ReactDOM.render(
-  <CommentBox />,
+  <CommentBox url="/api/comments"/>,
   document.getElementById('content')
 );
