@@ -116,6 +116,15 @@ var CommentBox = React.createClass({
   },
 
   handleCommentSubmit: function(comment){
+
+    //弄个假数据先放里面，减少感觉上的延时
+    //如果提交成功，重新请求下来的数据看不出变化
+    //如果提交失败，则回滚到之前的数据
+
+    var comments = this.state.data;
+    var fakeNewComments = comments.concat([comment]);
+    this.setState({data: fakeNewComments});
+
     $.ajax({
       url: this.props.url,
       dataType: 'json',
@@ -123,7 +132,10 @@ var CommentBox = React.createClass({
       data: comment,
       success: data => { this.setState({data: data})},
       error: (xhr, status, err) =>
-      {console.error(this.props.url, status, err.toString())}
+      {
+        this.setState({data: comments});
+        console.error(this.props.url, status, err.toString())
+      }
     });
   },
 
