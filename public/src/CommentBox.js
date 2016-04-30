@@ -22,10 +22,6 @@ var Comment = React.createClass({
 
 var CommentList = React.createClass({
 
-  componentDidMount(){
-    console.log(this.props.data);
-  },
-
   render: function() {
 
     var commentNodes = this.props.data.map(
@@ -45,11 +41,52 @@ var CommentList = React.createClass({
 });
 
 var CommentForm = React.createClass({
+
+  getInitialState: function() {
+    return { author: '', text: ''};
+  },
+
+  handleNameChanged: function(e) {
+    this.setState({ author: e.target.value});
+  },
+
+  handleCommentChanged: function(e) {
+    this.setState({ text: e.target.value});
+  },
+
+  handleSubmit: function(e) {
+    e.preventDefault();
+    var author = this.state.author.trim();
+    var comment = this.state.text.trim();
+    if (!author || !comment) {
+      alert('没填全');
+      return;
+    }
+    this.props.onCommentSubmit({
+      author:this.state.author,
+      text: this.state.text
+    });
+    this.setState({author:'', text: ''});
+  },
+
   render: function() {
     return (
-      <div className="commentForm">
-        大家好，将来我就是评论提交框！请多关照！！
-      </div>
+      <form className="commentForm" onSubmit={this.handleSubmit}>
+
+        <input
+          type="text"
+          placeholder="你的姓名"
+          value={this.state.author}
+          onChange={this.handleNameChanged}
+          />
+        <input
+          type="text"
+          placeholder="说点什么吧..."
+          value={this.state.text}
+          onChange={this.handleCommentChanged}
+          />
+        <input type="submit" value="提交评论"></input>
+      </form>
     );
   }
 });
@@ -65,9 +102,11 @@ var CommentBox = React.createClass({
       url: this.props.url,
       dataType: 'json',
       cache: false,
-      success: data => { this.setState({data: data}) }.bind(this),
+      success: function(data){
+        this.setState({data: data});
+      }.bind(this),
       error: (xhr, status, err) =>
-      {console.error(this.props.url, status, err.toString())}.bind(this)
+      {console.error(this.props.url, status, err.toString())}
     });
   },
 
@@ -76,12 +115,24 @@ var CommentBox = React.createClass({
     setInterval(this.loadCommentsFromServer, this.props.pollInterval);
   },
 
+  handleCommentSubmit: function(comment){
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      type: 'POST',
+      data: comment,
+      success: data => { this.setState({data: data})},
+      error: (xhr, status, err) =>
+      {console.error(this.props.url, status, err.toString())}
+    });
+  },
+
   render: function() {
     return (
       <div className="CommentBox">
         <h1>评论板块</h1>
         <CommentList data={this.state.data}/>
-        <CommentForm />
+        <CommentForm onCommentSubmit={this.handleCommentSubmit}/>
       </div>
     );
   }
