@@ -3,6 +3,7 @@
 var Comment = React.createClass({
 
   rawMarkup: function() {
+    {/*children就是子节点*/}
     var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
     return { __html: rawMarkup };
   },
@@ -13,7 +14,6 @@ var Comment = React.createClass({
         <h2 className="commentAuthor">
           {this.props.author}
         </h2>
-        {/*children就是子节点*/}
         <span dangerouslySetInnerHTML={this.rawMarkup()}></span>
       </div>
     );
@@ -56,9 +56,24 @@ var CommentForm = React.createClass({
 
 var CommentBox = React.createClass({
 
-  //componentDidMount(){this.state={a: b}} (reactive native) 等价？
   getInitialState: function() {
     return {data : []};
+  },
+
+  loadCommentsFromServer: function() {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      cache: false,
+      success: data => { this.setState({data: data}) }.bind(this),
+      error: (xhr, status, err) =>
+      {console.error(this.props.url, status, err.toString())}.bind(this)
+    });
+  },
+
+  componentDidMount: function() {
+    this.loadCommentsFromServer();
+    setInterval(this.loadCommentsFromServer, this.props.pollInterval);
   },
 
   render: function() {
@@ -72,12 +87,13 @@ var CommentBox = React.createClass({
   }
 });
 
+//假数据
 var data = [
   {id:'1', author:'shiyu', text:'i love u wanning~'},
   {id:'2', author:'jinwanning', text:'me *too*~, darling'}
 ];
 
 ReactDOM.render(
-  <CommentBox url="/api/comments"/>,
+  <CommentBox url="http://localhost:3000/api/comments" pollInterval={5000}/>,
   document.getElementById('content')
 );

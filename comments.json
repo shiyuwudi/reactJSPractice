@@ -1,13 +1,8 @@
 [
     {
-        "id": 1388534400000,
-        "author": "Pete Hunt",
-        "text": "Hey there!"
-    },
-    {
         "id": 1420070400000,
         "author": "Paul O\u2019Shannessy",
-        "text": "React is *great*!"
+        "text": "React JS is *great*!~"
     },
     {
         "id": 1461855757966,
@@ -17,6 +12,16 @@
     {
         "id": 1461855781737,
         "author": "a shit",
-        "text": "i'm a piece of shit, I'm also flying~"
+        "text": "i'm a piece of shit, I'm also flying~, so my name is flying shit!"
+    },
+    {
+        "id": 1461855781738,
+        "author": "石宇大仙儿",
+        "text": "大家好，这里真热闹啊!"
+    },
+    {
+        "id": 1461855781740,
+        "author": "金婉凝",
+        "text": "老公，你也来啦！~好开森!~"
     }
 ]
